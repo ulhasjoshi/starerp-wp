@@ -1,19 +1,14 @@
 <?php get_header(); ?>
-    <?php get_sidebar(); ?>
-    <main class="col-md-9 p-4" id="post-container">
-        <button class="btn btn-primary mb-3" 
-                hx-get="<?php echo esc_url(home_url('/wp-json/wp/v2/posts')); ?>"
-                hx-target="#post-container"
-                hx-swap="innerHTML">
-            Load Posts with HTMX
-        </button>
+
+<div class="main-content">
+    <div class="container-fluid py-4">
         <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
-            <article <?php post_class('mb-4'); ?>>
-                <h2><?php the_title(); ?></h2>
-                <div><?php the_content(); ?></div>
-            </article>
+            <h1><?php the_title(); ?></h1>
+            <div><?php the_content(); ?></div>
         <?php endwhile; else : ?>
-            <p><?php esc_html_e('No posts found.', 'bootstrap5-htmx'); ?></p>
+            <p>No content found.</p>
         <?php endif; ?>
-    </main>
+    </div>
+</div>
+
 <?php get_footer(); ?>
