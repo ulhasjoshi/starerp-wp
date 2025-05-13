@@ -1,0 +1,221 @@
+<h2 class="mb-4">👥 Clients</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <button 
+        class="btn btn-success" 
+        data-bs-toggle="modal" 
+        data-bs-target="#addClientModal">
+        ➕ Add New Client
+    </button>
+
+    <div class="d-flex align-items-center gap-2">
+        <label for="recordsPerPage" class="mb-0 fw-semibold">Show:</label>
+        <select id="recordsPerPage" class="form-select form-select-sm w-auto" onchange="updateRecordsPerPage()">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+        </select> 
+        <span class="fw-semibold">Records</span>
+    </div>
+</div>
+
+<div id="client-list">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle shadow-sm">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th><a href="#" onclick="sortTable('name')" class="text-decoration-none text-dark">Client Name ⬍</a></th>
+                    <th><a href="#" onclick="sortTable('email')" class="text-decoration-none text-dark">Email ⬍</a></th>
+                    <th><a href="#" onclick="sortTable('phone')" class="text-decoration-none text-dark">Phone ⬍</a></th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="clientTableBody">
+                <tr>
+                    <td>John Doe</td>
+                    <td>john@example.com</td>
+                    <td>+1 123 456 7890</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-warning me-2" onclick="openEditClientModal(1)">✏️ Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteClient(1)">🗑️ Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Jane Smith</td>
+                    <td>jane.smith@example.com</td>
+                    <td>+1 987 654 3210</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-warning me-2" onclick="openEditClientModal(2)">✏️ Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteClient(2)">🗑️ Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Michael Brown</td>
+                    <td>michael.brown@example.com</td>
+                    <td>+44 20 7946 0958</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-warning me-2" onclick="openEditClientModal(3)">✏️ Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteClient(3)">🗑️ Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Client pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <button class="page-link" onclick="changePage(-1)">⬅ Previous</button>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Page <span id="currentPage">1</span></span>
+            </li>
+            <li class="page-item">
+                <button class="page-link" onclick="changePage(1)">Next ➡</button>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<!-- Add Client Modal -->
+<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form onsubmit="addClient(event)">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" id="clientName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="clientEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="clientPhone" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add Client</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Client Modal -->
+<div class="modal fade" id="editClientModal" tabindex="-1" aria-labelledby="editClientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="editClientContent">
+            <!-- Content dynamically loaded -->
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Actions -->
+<script>
+    let currentPage = 1;
+    let currentSort = '';
+    let currentOrder = 'asc';
+    let recordsPerPage = 10;
+
+    function updateTable() {
+        // In a real app, fetch from API instead of console
+        console.log(`Fetching: page=${currentPage}, limit=${recordsPerPage}, sort=${currentSort}, order=${currentOrder}`);
+        document.getElementById('currentPage').innerText = currentPage;
+    }
+
+    function sortTable(column) {
+        if (currentSort === column) {
+            currentOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort = column;
+            currentOrder = 'asc';
+        }
+        currentPage = 1;
+        updateTable();
+    }
+
+    function changePage(delta) {
+        if (currentPage + delta < 1) return;
+        currentPage += delta;
+        updateTable();
+    }
+
+    function updateRecordsPerPage() {
+        const select = document.getElementById('recordsPerPage');
+        recordsPerPage = parseInt(select.value);
+        currentPage = 1;
+        updateTable();
+    }
+
+    function addClient(event) {
+        event.preventDefault();
+        const name = document.getElementById('clientName').value;
+        const email = document.getElementById('clientEmail').value;
+        const phone = document.getElementById('clientPhone').value;
+
+        console.log('Adding client:', { name, email, phone });
+
+        // Close Modal
+        bootstrap.Modal.getInstance(document.getElementById('addClientModal')).hide();
+
+        // Reset Form
+        event.target.reset();
+
+        // Simulate table update
+        updateTable();
+    }
+
+    function openEditClientModal(clientId) {
+        document.getElementById('editClientContent').innerHTML = `
+            <form onsubmit="editClient(event, ${clientId})">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" value="Sample Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="sample@example.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" value="+1 000 000 0000" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        `;
+        new bootstrap.Modal(document.getElementById('editClientModal')).show();
+    }
+
+    function editClient(event, clientId) {
+        event.preventDefault();
+        console.log('Editing client ID:', clientId);
+        bootstrap.Modal.getInstance(document.getElementById('editClientModal')).hide();
+        updateTable();
+    }
+
+    function deleteClient(clientId) {
+        if (confirm('Are you sure you want to delete this client?')) {
+            console.log('Deleted client with ID:', clientId);
+            updateTable();
+        }
+    }
+</script>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

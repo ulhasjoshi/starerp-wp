@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Invoicing Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        #main-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .nav-link.active {
+            background-color: #0d6efd !important;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column flex-md-row">
+
+    <!-- Toggle Button for Mobile -->
+    <button class="btn btn-primary d-md-none m-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+        ☰ Menu
+    </button>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="collapse d-md-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 250px; height: 100vh;">
+        <h5 class="mb-3">☰ Menu</h5>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+                <a class="nav-link text-white" hx-get="clients.html" hx-target="#main-content">👥 Clients</a>
+            </li>
+            <li>
+                <a class="nav-link text-white" hx-get="products.html" hx-target="#main-content">📦 Products</a>
+            </li>
+            <li>
+                <a class="nav-link text-white" hx-get="invoices.html" hx-target="#main-content">🧾 Invoices</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1 p-4" id="main-content">
+        <h2>Welcome to the Invoicing Dashboard</h2>
+        <p>Select a module from the sidebar to begin.</p>
+    </main>
+
+    <!-- Bootstrap JS for Collapsible Sidebar -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- HTMX Active Link Script -->
+    <script>
+        document.body.addEventListener('htmx:afterRequest', (evt) => {
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => link.classList.remove('active'));
+
+            if (evt.detail.elt && evt.detail.elt.classList.contains('nav-link')) {
+                evt.detail.elt.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
